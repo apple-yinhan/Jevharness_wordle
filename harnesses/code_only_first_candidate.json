@@ -1,0 +1,14 @@
+{
+  "version": 3,
+  "name": "Smoke test: first remaining candidate (no Jev)",
+  "jev_model": "typesafe-ai/jev",
+  "nodes": [
+    {
+      "id": "pick",
+      "kind": "python",
+      "depends_on": [],
+      "source": "def score(guess, answer):\n    res = ['B'] * 5\n    left = {}\n    for i in range(5):\n        if guess[i] == answer[i]:\n            res[i] = 'G'\n        else:\n            left[answer[i]] = left.get(answer[i], 0) + 1\n    for i in range(5):\n        if res[i] != 'G' and left.get(guess[i], 0) > 0:\n            res[i] = 'Y'\n            left[guess[i]] -= 1\n    return ''.join(res)\n\ndef run(obs, nodes, memory):\n    if not obs['history']:\n        return {'guess': 'salet', 'remaining': len(obs['answer_pool'])}\n    cand = [w for w in obs['answer_pool'] if all(score(h['guess'], w) == h['feedback'] for h in obs['history'])]\n    return {'guess': cand[0], 'remaining': len(cand)}\n"
+    }
+  ],
+  "output": "nodes['pick']['guess']"
+}
